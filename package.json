@@ -27,5 +27,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "react-router-dom": "^5.1.2",
+    "styled-components": "^4.4.0",
+    "superagent": "^5.1.0"
   }
 }
