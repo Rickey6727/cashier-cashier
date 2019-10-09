@@ -106,16 +106,18 @@ export default class OrderHistory extends React.Component{
         document.execCommand("Copy");
     }
     deleteReceipt() {
-        const db = firebase.firestore();
-        db.collection("history").doc(this.state.deleteReceiptId).delete().then(function() {
-            console.log("Document successfully deleted!");
-        }).catch(function(error) {
-            console.error("Error removing document: ", error);
-        });
-        this.selectHistory();
-        this.setState({
-            deleteReceiptId: '',
-        })
+        if(window.confirm('レシート情報を削除します')){
+            const db = firebase.firestore();
+            db.collection("history").doc(this.state.deleteReceiptId).delete().then(function() {
+                console.log("Document successfully deleted!");
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+            this.selectHistory();
+            this.setState({
+                deleteReceiptId: '',
+            })
+        }
     }
     render(){
         return (
