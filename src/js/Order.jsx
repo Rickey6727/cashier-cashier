@@ -308,7 +308,7 @@ export default class Order extends React.Component{
                 <ConfirmWrapper id='confirm_open'>
                     <Confirm>
                         <h2>注文金額：¥ {this.state.purchasePrice} -</h2>
-                        <h2>お預かり：<input  value={this.state.deposit} onChange={this.handleDepositChange}/></h2>
+                        <h2>お預かり：<input type="tel" value={this.state.deposit} onChange={this.handleDepositChange}/></h2>
                         {this.state.returnMoney > 0 ?
                             <h2>お釣り: ¥ {this.state.returnMoney}</h2>
                             :

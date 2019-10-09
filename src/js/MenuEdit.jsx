@@ -167,7 +167,7 @@ export default class MenuEdit extends React.Component{
                             <AddMenuInput type='text' name='MenuName' value={this.state.newMenuName} onChange={this.handleChange} placeholder='メニュー名称'/>
                         </AddMenuLabel>
                         <AddMenuLabel>
-                            <AddMenuInput type='number' name='MenuPrice' value={this.state.newMenuPrice} onChange={this.handleChange} placeholder='設定価格'/>
+                            <AddMenuInput type='tel' name='MenuPrice' value={this.state.newMenuPrice} onChange={this.handleChange} placeholder='設定価格'/>
                         </AddMenuLabel>
                         <AddMenuLabel>
                             <AddMenuTextarea type='text' name='MenuMemo' value={this.state.newMenuMemo} onChange={this.handleChange} placeholder='メモ'/>
