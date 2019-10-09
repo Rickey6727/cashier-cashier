@@ -227,40 +227,42 @@ export default class Order extends React.Component{
         })
     }
     purchaseCompleted() {
-        console.log(this.state.purchaseItems);
-        var toDoubleDigits = function(num) {
-            num += "";
-            if (num.length === 1) {
-              num = "0" + num;
-            }
-           return num;     
-        };          
-        var nowDate = new Date();
-        var yy = nowDate.getFullYear().toString().substr(2,2);
-        var mm = toDoubleDigits((nowDate.getMonth() + 1).toString());
-        var dd = toDoubleDigits(nowDate.getDate().toString());
-        var hh = toDoubleDigits(nowDate.getHours().toString());
-        var mi = toDoubleDigits(nowDate.getMinutes().toString());
-        var deleteRecieptId = Number(yy + mm + dd + hh + mi);
+        if(window.confirm('会計処理を完了します')){
+            var toDoubleDigits = function(num) {
+                num += "";
+                if (num.length === 1) {
+                num = "0" + num;
+                }
+            return num;     
+            };          
+            var nowDate = new Date();
+            var yy = nowDate.getFullYear().toString().substr(2,2);
+            var mm = toDoubleDigits((nowDate.getMonth() + 1).toString());
+            var dd = toDoubleDigits(nowDate.getDate().toString());
+            var hh = toDoubleDigits(nowDate.getHours().toString());
+            var mi = toDoubleDigits(nowDate.getMinutes().toString());
+            var deleteRecieptId = Number(yy + mm + dd + hh + mi);
 
-        let list = [];
-        for (var i=0; i < this.state.purchaseItems.length; i++) {
-            list.push({
-                menu_title: this.state.purchaseItems[i].item_name,
-                menu_price: this.state.purchaseItems[i].item_price,
-                purchased_count: 1,
+            let list = [];
+            for (var i=0; i < this.state.purchaseItems.length; i++) {
+                list.push({
+                    menu_title: this.state.purchaseItems[i].item_name,
+                    menu_price: this.state.purchaseItems[i].item_price,
+                    purchased_count: 1,
+                })
+            }
+            addHistory(this.state.purchasePrice, this.state.deposit, list);
+            this.setState({
+                purchaseItems: [],
+                purchasePrice: 0,
+                deposit: 0,
+                returnMoney: -10,
+                purchaseCount: 0,
+                isConfirmWindowOpend: false,
             })
+            document.getElementById('confirm_open').style.opacity = '0';
+            document.getElementById('confirm_open').style.transform = 'translateX(120vw)';
         }
-        addHistory(this.state.purchasePrice, this.state.deposit, list);
-        this.setState({
-            purchaseItems: [],
-            purchasePrice: 0,
-            deposit: 0,
-            returnMoney: -10,
-            isConfirmWindowOpend: false,
-        })
-        document.getElementById('confirm_open').style.opacity = '0';
-        document.getElementById('confirm_open').style.transform = 'translateX(120vw)';
     }
     purchaseNotCompleted() {
         this.setState({

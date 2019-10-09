@@ -129,22 +129,26 @@ export default class MenuEdit extends React.Component{
         }
     }
     addMenu() {
-        addMenu(this.state.newMenuName, this.state.newMenuPrice, this.state.newMenuMemo);
-        this.setState({
-            newMenuName: '',
-            newMenuPrice: '',
-            newMenuMemo: ''
-        })
-        this.selectMenu();
+        if(window.confirm('メニューの追加を完了します')){
+            addMenu(this.state.newMenuName, this.state.newMenuPrice, this.state.newMenuMemo);
+            this.setState({
+                newMenuName: '',
+                newMenuPrice: '',
+                newMenuMemo: ''
+            })
+            this.selectMenu();
+        }
     }
     deleteMenu(targetId) {
-        const db = firebase.firestore();
-        db.collection("menu").doc(targetId).delete().then(function() {
-            console.log("Document successfully deleted!");
-        }).catch(function(error) {
-            console.error("Error removing document: ", error);
-        });
-        this.selectMenu();
+        if(window.confirm('メニューの削除を完了します')){
+            const db = firebase.firestore();
+            db.collection("menu").doc(targetId).delete().then(function() {
+                console.log("Document successfully deleted!");
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+            this.selectMenu();
+        }
     }
     handleChange(e) {
         if (e.target.name === 'MenuName') {
