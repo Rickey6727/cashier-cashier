@@ -11,15 +11,6 @@ const Title = styled.h1`
     font-size: 1rem;
 `
 
-const Button = styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    padding: 0;
-    appearance: none;
-`
-
 const DeleteButton = styled.a`
     padding: 2px 10px;
     background-color: red;
@@ -56,21 +47,6 @@ const TableBodyRow = styled.tr`
     }
 `
 
-const InputNoStyle = styled.input`
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    outline: none;
-    background: none;
-    font-size: 18px;
-    width: 120px;
-`
-
-const CopyImg = styled.img`
-    width: 18px;
-    height: 18px;
-`
-
 export default class OrderHistory extends React.Component{
     constructor(props){
         super(props)
@@ -88,7 +64,7 @@ export default class OrderHistory extends React.Component{
         const db = firebase.firestore();
         let historys = [];
         const docRef = db.collection("history");
-        const doc = await docRef
+        await docRef
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {

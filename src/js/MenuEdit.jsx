@@ -111,7 +111,7 @@ export default class MenuEdit extends React.Component{
         const db = firebase.firestore();
         let menuList = [];
         const docRef = db.collection("menu");
-        const doc = await docRef
+        await docRef
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {

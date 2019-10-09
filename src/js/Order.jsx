@@ -174,7 +174,7 @@ export default class Order extends React.Component{
         const db = firebase.firestore();
         let menuList = [];
         const docRef = db.collection("menu");
-        const doc = await docRef
+        await docRef
             .get()
             .then(function(querySnapshot) {
                 querySnapshot.forEach(function(doc) {
@@ -228,21 +228,6 @@ export default class Order extends React.Component{
     }
     purchaseCompleted() {
         if(window.confirm('会計処理を完了します')){
-            var toDoubleDigits = function(num) {
-                num += "";
-                if (num.length === 1) {
-                num = "0" + num;
-                }
-            return num;     
-            };          
-            var nowDate = new Date();
-            var yy = nowDate.getFullYear().toString().substr(2,2);
-            var mm = toDoubleDigits((nowDate.getMonth() + 1).toString());
-            var dd = toDoubleDigits(nowDate.getDate().toString());
-            var hh = toDoubleDigits(nowDate.getHours().toString());
-            var mi = toDoubleDigits(nowDate.getMinutes().toString());
-            var deleteRecieptId = Number(yy + mm + dd + hh + mi);
-
             let list = [];
             for (var i=0; i < this.state.purchaseItems.length; i++) {
                 list.push({
