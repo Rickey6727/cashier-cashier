@@ -1,7 +1,6 @@
 import React from 'react';
-import request from 'superagent';
 import styled from 'styled-components';
-import CopyImage from '../images/copy.png';
+import firebase from 'firebase';
 
 const Wrapper = styled.div`
 `
@@ -21,7 +20,7 @@ const Button = styled.button`
     appearance: none;
 `
 
-const DeleteButton = styled(Button)`
+const DeleteButton = styled.a`
     padding: 2px 10px;
     background-color: red;
     color: white;
@@ -85,13 +84,42 @@ export default class OrderHistory extends React.Component{
         this.copyReceiptId = this.copyReceiptId.bind(this);
         this.selectHistory();
     }
-    selectHistory() {
-		request
-			.get('https://cashier-app-back.herokuapp.com/history')
-			.end((err, res) => {
-				var historys = res.body;
-				this.setState({ historys });
+    async selectHistory() {
+        const db = firebase.firestore();
+        let historys = [];
+        const docRef = db.collection("history");
+        const doc = await docRef
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    console.log(doc.data().create_date);
+                    console.log(doc.data().purchased_item_list);
+                    let data = [];
+                    let d = new Date( doc.data().create_date.seconds * 1000 );
+                    let year  = d.getFullYear();
+                    let month = d.getMonth() + 1;
+                    let day  = d.getDate();
+                    let hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
+                    let min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
+                    let sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
+                    let create_date = year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+                    data.purchased_item_list = doc.data().purchased_item_list;
+                    data.create_date = create_date;
+                    data.acc_deposit = doc.data().acc_deposit;
+                    data.acc_return = doc.data().acc_return;
+                    data.acc_total = doc.data().acc_total;
+                    historys.push({key: doc.id, data: data});
+                    console.log(data.purchased_item_list);
+                    console.log(data.create_date);
+                });
+                console.log(historys);
+            })
+            .catch(function(error) {
+                console.log("Error getting documents: ", error);
             });
+        if ( historys !== null) {
+            this.setState({ historys });
+        }
     }
     handleDeleteReceiptIdChange(e) {
         this.setState({deleteReceiptId: e.target.value})
@@ -102,51 +130,49 @@ export default class OrderHistory extends React.Component{
         document.execCommand("Copy");
     }
     deleteReceipt() {
-        request
-        .post('https://cashier-app-back.herokuapp.com/history/delete')
-        .type('form')
-        .send({
-            receipt_id: this.state.deleteReceiptId,
-        })
-        .end((err, res) => {
-            console.log('通信完了');
-            this.setState({
-                historys: [],
-                deleteReceiptId: 0,
-            })
-            this.selectHistory();
+        const db = firebase.firestore();
+        db.collection("history").doc(this.state.deleteReceiptId).delete().then(function() {
+            console.log("Document successfully deleted!");
+        }).catch(function(error) {
+            console.error("Error removing document: ", error);
         });
+        this.selectHistory();
+        this.setState({
+            deleteReceiptId: '',
+        })
     }
     render(){
         return (
             <Wrapper>
                 <Title>HISTORY</Title>
                 <DeleteForm>
-                    <input type='number' placeholder="レシート番号を入力" onChange={this.handleDeleteReceiptIdChange} value={this.state.deleteReceiptId}/>
+                    <input type='text' placeholder="レシート番号を入力" onChange={this.handleDeleteReceiptIdChange} value={this.state.deleteReceiptId}/>
                     <DeleteButton onClick={this.deleteReceipt}>返品</DeleteButton>
                 </DeleteForm>
                 <Table>
                     <thead>
                         <tr>
-                            <TableHeader>商品名</TableHeader>
-                            <TableHeader>購入点数</TableHeader>
-                            <TableHeader>小計</TableHeader>
-                            <TableHeader>合計</TableHeader>
-                            <TableHeader>お釣り</TableHeader>
-                            <TableHeader>日時</TableHeader>
                             <TableHeader>レシートID</TableHeader>
+                            <TableHeader>購入日</TableHeader>
+                            <TableHeader>購入品目</TableHeader>
+                            <TableHeader>合計</TableHeader>
+                            <TableHeader>支払</TableHeader>
+                            <TableHeader>釣銭</TableHeader>
                         </tr>
                     </thead>
                     <tbody>
                         {this.state.historys.map((history, index) => (
                             <TableBodyRow key={index}>
-                                <TableBody>{history.item_name}</TableBody>
-                                <TableBody>{history.purchased_count}点</TableBody>
-                                <TableBody>¥ {history.purchased_price} -</TableBody>
-                                <TableBody>¥ {history.total_price} -</TableBody>
-                                <TableBody>¥ {history.deposit_price} -</TableBody>
-                                <TableBody>{history.create_date}</TableBody>
-                                <TableBody><InputNoStyle id={history.receipt_id} value={history.receipt_id} readOnly></InputNoStyle><button onClick={() => this.copyReceiptId(history.receipt_id)}><CopyImg src={CopyImage}></CopyImg></button></TableBody>
+                                <TableBody>{history.key}</TableBody>
+                                <TableBody>{history.data.create_date}</TableBody>
+                                    <TableBody>
+                                        {this.state.historys[index].data.purchased_item_list.map((item, index) => (
+                                            <p key={index}>{item.menu_title} ¥{item.menu_price}- x{item.purchased_count}</p>
+                                        ))}
+                                    </TableBody>
+                                <TableBody>{history.data.acc_total}</TableBody>
+                                <TableBody>{history.data.acc_deposit}</TableBody>
+                                <TableBody>{history.data.acc_return}</TableBody>
                             </TableBodyRow>
                         ))}
                     </tbody>

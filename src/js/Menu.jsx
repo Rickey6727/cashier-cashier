@@ -1,7 +1,7 @@
 import React from 'react';
-import request from 'superagent';
 import styled from 'styled-components';
-import LoadingImage from '../images/loading.gif'
+import LoadingImage from '../images/loading.gif';
+import firebase from 'firebase';
 
 const Wrapper = styled.div`
 `
@@ -61,19 +61,30 @@ export default class Menu extends React.Component{
             menus: [],
             loading: true
         }
-        this.selectMenus = this.selectMenus.bind(this);
-        this.selectMenus();
+        this.selectMenu = this.selectMenu.bind(this);
+        this.selectMenu();
     }
-    selectMenus() {
-		request
-			.get('https://cashier-app-back.herokuapp.com/menu')
-			.end((err, res) => {
-				var menus = res.body;
-                this.setState({
-                    menus: menus,
-                    loading: false
+    async selectMenu() {
+        const db = firebase.firestore();
+        let menuList = [];
+        const docRef = db.collection("menu");
+        const doc = await docRef
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    menuList.push({key: doc.id, data: doc.data()});
                 });
-			});
+                console.log(menuList);
+            })
+            .catch(function(error) {
+                console.log("Error getting documents: ", error);
+            });
+        if ( menuList !== null) {
+            this.setState({
+                menus: menuList,
+                loading: false
+            })
+        }
     }
     render(){
         return (
@@ -83,9 +94,9 @@ export default class Menu extends React.Component{
                     <List>
                         {this.state.menus.map((menu, index) => (
                         <ListContent key={index}>
-                            <MenuPrice>¥ {menu.item_price} -</MenuPrice>
-                            <MenuTitle>{menu.item_name}</MenuTitle>
-                            <MenuMemo>{menu.memo}</MenuMemo>
+                            <MenuPrice>¥ {menu.data.menu_price} -</MenuPrice>
+                            <MenuTitle>{menu.data.menu_title}</MenuTitle>
+                            <MenuMemo>{menu.data.menu_memo}</MenuMemo>
                         </ListContent>
                         ))}
                     </List>

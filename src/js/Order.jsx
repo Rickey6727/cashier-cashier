@@ -1,6 +1,7 @@
 import React from 'react';
-import request from 'superagent';
 import styled from 'styled-components';
+import firebase from 'firebase';
+import { addHistory } from './DatabaseConnection';
 
 const Wrapper = styled.div`
     margin-left: 100px;
@@ -160,18 +161,35 @@ export default class Order extends React.Component{
             purchaseCount: 0,
             returnMoney: -10,
         }
-		request
-			.get('https://cashier-app-back.herokuapp.com/menu')
-			.end((err, res) => {
-				var menus = res.body;
-				this.setState({ menus });
-            });
         this.changeConfirmWindowState = this.changeConfirmWindowState.bind(this);
         this.addPurchaseMenu = this.addPurchaseMenu.bind(this);
         this.handleDepositChange = this.handleDepositChange.bind(this);
         this.purchaseCompleted = this.purchaseCompleted.bind(this);
         this.purchaseNotCompleted = this.purchaseNotCompleted.bind(this);
         this.clearPurchaseItems = this.clearPurchaseItems.bind(this);
+        this.selectMenu = this.selectMenu.bind(this);
+        this.selectMenu();
+    }
+    async selectMenu() {
+        const db = firebase.firestore();
+        let menuList = [];
+        const docRef = db.collection("menu");
+        const doc = await docRef
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    menuList.push({key: doc.id, data: doc.data()});
+                });
+                console.log(menuList);
+            })
+            .catch(function(error) {
+                console.log("Error getting documents: ", error);
+            });
+        if ( menuList !== null) {
+            this.setState({
+                menus: menuList,
+            })
+        }
     }
     changeConfirmWindowState() {
         if (this.state.isConfirmWindowOpend === false) {
@@ -209,7 +227,6 @@ export default class Order extends React.Component{
         })
     }
     purchaseCompleted() {
-        //ここで購入後のレシート情報を更新する
         console.log(this.state.purchaseItems);
         var toDoubleDigits = function(num) {
             num += "";
@@ -225,22 +242,16 @@ export default class Order extends React.Component{
         var hh = toDoubleDigits(nowDate.getHours().toString());
         var mi = toDoubleDigits(nowDate.getMinutes().toString());
         var deleteRecieptId = Number(yy + mm + dd + hh + mi);
+
+        let list = [];
         for (var i=0; i < this.state.purchaseItems.length; i++) {
-            request
-            .post('https://cashier-app-back.herokuapp.com/history')
-            .type('form')
-            .send({
-                receipt_id: deleteRecieptId,
-                item_name: this.state.purchaseItems[i].item_name,
+            list.push({
+                menu_title: this.state.purchaseItems[i].item_name,
+                menu_price: this.state.purchaseItems[i].item_price,
                 purchased_count: 1,
-                purchased_price: this.state.purchaseItems[i].item_price,
-                total_price: this.state.purchasePrice,
-                deposit_price: this.state.deposit,
             })
-            .end((err, res) => {
-                console.log('通信完了');
-            });
         }
+        addHistory(this.state.purchasePrice, this.state.deposit, list);
         this.setState({
             purchaseItems: [],
             purchasePrice: 0,
@@ -269,8 +280,8 @@ export default class Order extends React.Component{
                         <List>
                             {this.state.menus.map((menu, index) => (
                             <ListContent key={index}>
-                                <Pad onClick={ () => this.addPurchaseMenu(menu.id, menu.item_name, menu.item_price) }>
-                                    <p>{menu.item_name}（¥{menu.item_price}-）</p>
+                                <Pad onClick={ () => this.addPurchaseMenu(menu.key, menu.data.menu_title, menu.data.menu_price) }>
+                                    <p>{menu.data.menu_title}（¥{menu.data.menu_price}-）</p>
                                 </Pad>
                             </ListContent>
                             ))}

@@ -1,23 +1,23 @@
 import firebase from 'firebase';
 
-export async function getMenu() {
-    console.log('入った');
-    const db = firebase.firestore();
-    const docRef = db.collection("menu").doc("Q9oQzo7cYLCBXaqMMiBG");
-    
-    console.log('通信中...');
-    const doc = await docRef.get();
-    console.log('doc.data()');
-    console.log(doc.data());    
-}
-
 export async function addMenu(title, price, memo) {
-    console.log('入った');
     const db = firebase.firestore();
-    db.collection("menu").add({
+    const docRef = db.collection("menu");
+    await docRef.add({
         menu_title: title,
-        menu_price: price,
+        menu_price: Number(price),
         menu_memo: memo
     });
-    console.log('追加');
+}
+
+export async function addHistory(accTotal, accDeposit, itemList) {
+    const db = firebase.firestore();
+    const docRef = db.collection("history");
+    await docRef.add({
+        acc_total: accTotal,
+        acc_deposit: Number(accDeposit),
+        acc_return: accDeposit - accTotal,
+        purchased_item_list: itemList,
+        create_date: new Date(),
+    });
 }

@@ -1,6 +1,7 @@
 import React from 'react';
-import request from 'superagent';
 import styled from 'styled-components';
+import { addMenu } from './DatabaseConnection';
+import firebase from 'firebase';
 
 const Wrapper = styled.div`
     margin-left: 50px;
@@ -32,7 +33,7 @@ const DeleteButton = styled(Button)`
     right: 50px;
 `
 
-const AddButton = styled(Button)`
+const AddButton = styled.a`
     padding: 10px;
     background-color: green;
     color: white;
@@ -106,38 +107,44 @@ export default class MenuEdit extends React.Component{
 
         this.selectMenu();
     }
-    selectMenu() {
-		request
-			.get('https://cashier-app-back.herokuapp.com/menu')
-			.end((err, res) => {
-				var menus = res.body;
-				this.setState({ menus });
+    async selectMenu() {
+        const db = firebase.firestore();
+        let menuList = [];
+        const docRef = db.collection("menu");
+        const doc = await docRef
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    menuList.push({key: doc.id, data: doc.data()});
+                });
+                console.log(menuList);
+            })
+            .catch(function(error) {
+                console.log("Error getting documents: ", error);
             });
+        if ( menuList !== null) {
+            this.setState({
+                menus: menuList,
+            })
+        }
     }
     addMenu() {
-		request
-			.post('https://cashier-app-back.herokuapp.com/edit/addMenu')
-            .type('form')
-            .send({
-                name: this.state.newMenuName,
-                price: this.state.newMenuPrice,
-                memo: this.state.newMenuMemo,
-            })
-			.end((err, res) => {
-                console.log('通信完了');
-            });
+        addMenu(this.state.newMenuName, this.state.newMenuPrice, this.state.newMenuMemo);
+        this.setState({
+            newMenuName: '',
+            newMenuPrice: '',
+            newMenuMemo: ''
+        })
+        this.selectMenu();
     }
     deleteMenu(targetId) {
-		request
-			.post('https://cashier-app-back.herokuapp.com/edit/deleteMenu')
-            .type('form')
-            .send({
-                id: targetId,
-            })
-			.end((err, res) => {
-                console.log('通信完了');
-                this.selectMenu();
-            });
+        const db = firebase.firestore();
+        db.collection("menu").doc(targetId).delete().then(function() {
+            console.log("Document successfully deleted!");
+        }).catch(function(error) {
+            console.error("Error removing document: ", error);
+        });
+        this.selectMenu();
     }
     handleChange(e) {
         if (e.target.name === 'MenuName') {
@@ -165,15 +172,15 @@ export default class MenuEdit extends React.Component{
                         <AddMenuLabel>
                             <AddMenuTextarea type='text' name='MenuMemo' value={this.state.newMenuMemo} onChange={this.handleChange} placeholder='メモ'/>
                         </AddMenuLabel>
-                        <AddButton type='submit' onClick={this.addMenu}>追加</AddButton>
+                        <AddButton onClick={this.addMenu}>追加</AddButton>
                     </AddMenuForm>
                 </AddMenuFormWrapper>
                 <List>
                     {this.state.menus.map((menu, index) => (
                     <ListContent key={index}>
-                        <ListContentName>{menu.item_name} ( ¥{menu.item_price}- )</ListContentName>
-                        <p>{menu.memo}</p>
-                        <DeleteButton onClick={() => this.deleteMenu(menu.id)}>削除</DeleteButton>
+                        <ListContentName>{menu.data.menu_title} ( ¥{menu.data.menu_price}- )</ListContentName>
+                        <p>{menu.data.menu_memo}</p>
+                        <DeleteButton onClick={() => this.deleteMenu(menu.key)}>削除</DeleteButton>
                     </ListContent>
                     ))}
                 </List>
