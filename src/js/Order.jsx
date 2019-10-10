@@ -41,7 +41,7 @@ const PurchaseItems = styled.div`
 const PurchaseItemsList = styled.ul`
     list-style: none;
     padding: 50px 0;
-    height: 60vh;
+    height: 55vh;
     background-color: #F3F3ED;
     border-radius: 10px;
     overflow: scroll;

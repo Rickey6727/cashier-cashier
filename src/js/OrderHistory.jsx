@@ -10,7 +10,7 @@ const Wrapper = styled.div`
 const LocalDeleteLink = styled(DeleteLink)`
     position: absolute;
     top: 8px;
-    left: 208px;
+    left: 245px;
     height: 13px;
     width: 50px;
     padding: 3px 0;
