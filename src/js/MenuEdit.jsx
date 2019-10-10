@@ -2,53 +2,32 @@ import React from 'react';
 import styled from 'styled-components';
 import { addMenu } from './DatabaseConnection';
 import firebase from 'firebase';
+import { NextLink, DeleteButton } from './utilities/Button';
 
 const Wrapper = styled.div`
     margin-left: 50px;
 `
 
-const Title = styled.h1`
-    text-align: center;
-    font-family: 'Papyrus';
-    font-size: 1rem;
-`
-
-const Button = styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    padding: 0;
-    appearance: none;
-`
-
-const DeleteButton = styled(Button)`
+const LocalDeleteButton = styled(DeleteButton)`
     position: absolute;
-    padding: 10px;
-    background-color: red;
-    color: white;
-    border-radius: 10px;
-    min-width: 100px;
-    top: 40%;
+    top: 30px;
     right: 50px;
-`
-
-const AddButton = styled.a`
-    padding: 10px;
-    background-color: green;
-    color: white;
-    border-radius: 10px;
-    width: 100%;
+    width: 100px;
 `
 
 const List = styled.ul`
+    position: fixed;
+    top: 50px;
+    left: 50px;
     list-style: none;
-    border: solid 1px #2D2D2C;
     border-radius: 10px;
     background-color: #F3F3ED;
     width: 60vw;
     max-height: 80vh;
     overflow: scroll;
+    box-shadow: 0 0 8px gray;
+    margin: 0;
+    padding: 50px 0 50px 40px;
 `
 
 const ListContent = styled.li`
@@ -66,9 +45,9 @@ const AddMenuFormWrapper = styled.div`
     top: 50px;
     right: 50px;
     padding: 30px;
-    border: solid 1px #2D2D2C;
     border-radius: 10px;
     background-color: #F3F3ED;
+    box-shadow: 0 0 8px gray;
 `
 
 const AddMenuForm = styled.form`
@@ -164,7 +143,15 @@ export default class MenuEdit extends React.Component{
     render(){
         return (
             <Wrapper>
-                <Title>SETTING</Title>
+                <List>
+                    {this.state.menus.map((menu, index) => (
+                    <ListContent key={index}>
+                        <ListContentName>{menu.data.menu_title} ( ¥{menu.data.menu_price}- )</ListContentName>
+                        <p>{menu.data.menu_memo}</p>
+                        <LocalDeleteButton onClick={() => this.deleteMenu(menu.key)}>削除</LocalDeleteButton>
+                    </ListContent>
+                    ))}
+                </List>
                 <AddMenuFormWrapper>
                     <AddMenuForm>
                         <AddMenuLabel>
@@ -176,18 +163,11 @@ export default class MenuEdit extends React.Component{
                         <AddMenuLabel>
                             <AddMenuTextarea type='text' name='MenuMemo' value={this.state.newMenuMemo} onChange={this.handleChange} placeholder='メモ'/>
                         </AddMenuLabel>
-                        <AddButton onClick={this.addMenu}>追加</AddButton>
+                        { (this.state.newMenuName !== '' && this.state.newMenuPrice !== '' && this.state.newMenuMemo !== '') &&
+                            <NextLink onClick={this.addMenu}>追加</NextLink>
+                        }
                     </AddMenuForm>
                 </AddMenuFormWrapper>
-                <List>
-                    {this.state.menus.map((menu, index) => (
-                    <ListContent key={index}>
-                        <ListContentName>{menu.data.menu_title} ( ¥{menu.data.menu_price}- )</ListContentName>
-                        <p>{menu.data.menu_memo}</p>
-                        <DeleteButton onClick={() => this.deleteMenu(menu.key)}>削除</DeleteButton>
-                    </ListContent>
-                    ))}
-                </List>
             </Wrapper>
         )
     }

@@ -2,36 +2,25 @@ import React from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase';
 import { addHistory } from './DatabaseConnection';
+import { NextButton, BackButton, PadButton } from './utilities/Button'
 
 const Wrapper = styled.div`
-    margin-left: 100px;
-`
-
-const Title = styled.h1`
-    text-align: center;
-    font-family: 'Papyrus';
-    font-size: 1rem;
-`
-
-const Button = styled.button`
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    outline: none;
-    padding: 0;
-    appearance: none;
 `
 
 const PadsWrapper = styled.div`
 `
 
 const Pads = styled.div`
+    position: fixed;
+    top: 50px;
+    left: 50px;
     width: 70vw;
     overflow: hidden;
 `
 
 const List = styled.ul`
     list-style: none;
+    margin: 0;
 `
 
 const ListContent = styled.li`
@@ -39,16 +28,6 @@ const ListContent = styled.li`
     width: 200px;
     height: 200px;
     margin: 10px;
-`
-
-const Pad = styled(Button)`
-    background-color: #F3F3ED;
-    border: solid 1px #2D2D2C;
-    border-radius: 10px;
-    padding: 40px;
-    margin-right: 10px;
-    width: 200px;
-    height: 200px;
 `
 
 const PurchaseItems = styled.div`
@@ -60,12 +39,13 @@ const PurchaseItems = styled.div`
 
 const PurchaseItemsList = styled.ul`
     list-style: none;
+    padding: 50px 0;
     height: 60vh;
     background-color: #F3F3ED;
-    border: solid 1px #2D2D2C;
     border-radius: 10px;
     overflow: scroll;
-    padding: 0;
+    box-shadow: 0 0 8px gray;
+    margin: 0;
 `
 
 const PurchaseItemsListContent = styled.li`
@@ -82,26 +62,6 @@ const PurchaseItemName = styled.p`
 const PurchaseItemPrice = styled.p`
     float: right;
     margin-right: 50px;
-`
-
-const NextButton = styled(Button)`
-    width: 100%;
-    height: 60px;
-    background-color: #4ABD4A;
-    color: #F3F3ED;
-    font-size: 24px;
-    border-radius: 10px;
-    margin: 10px;
-`
-
-const ClearButton = styled(Button)`
-    width: 100%;
-    height: 40px;
-    background-color: grey;
-    color: #F3F3ED;
-    font-size: 24px;
-    border-radius: 10px;
-    margin: 10px;
 `
 
 const ConfirmWrapper = styled.div`
@@ -121,32 +81,12 @@ const Confirm = styled.div`
     width: 20vw;
     height: 325px;
     background-color: #F3F3ED;
-    border: solid 1px #2D2D2C;
     border-radius: 10px;
     padding: 50px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-`
-
-const ConfirmButton = styled(Button)`
-    width: 100%;
-    height: 60px;
-    background-color: #4ABD4A;
-    color: #F3F3ED;
-    font-size: 24px;
-    border-radius: 10px;
-    margin: 10px;
-`
-
-const NotConfirmButton = styled(Button)`
-    width: 100%;
-    height: 40px;
-    background-color: grey;
-    color: #F3F3ED;
-    font-size: 24px;
-    border-radius: 10px;
-    margin: 10px;
+    box-shadow: 0 0 8px gray;
 `
 
 export default class Order extends React.Component{
@@ -261,15 +201,14 @@ export default class Order extends React.Component{
     render(){
         return (
             <Wrapper>
-                <Title>POS</Title>
                 <PadsWrapper>
                     <Pads>
                         <List>
                             {this.state.menus.map((menu, index) => (
                             <ListContent key={index}>
-                                <Pad onClick={ () => this.addPurchaseMenu(menu.key, menu.data.menu_title, menu.data.menu_price) }>
+                                <PadButton onClick={ () => this.addPurchaseMenu(menu.key, menu.data.menu_title, menu.data.menu_price) }>
                                     <p>{menu.data.menu_title}（¥{menu.data.menu_price}-）</p>
-                                </Pad>
+                                </PadButton>
                             </ListContent>
                             ))}
                         </List>
@@ -288,7 +227,7 @@ export default class Order extends React.Component{
                             <NextButton onClick={this.changeConfirmWindowState}>next</NextButton>
                         }
                         {this.state.purchaseCount > 0 &&
-                            <ClearButton onClick={this.clearPurchaseItems}>clear</ClearButton>
+                            <BackButton onClick={this.clearPurchaseItems}>clear</BackButton>
                         }
                     </PurchaseItems>
                 </PadsWrapper>
@@ -302,10 +241,10 @@ export default class Order extends React.Component{
                             <h2>お釣り: ¥ 0</h2>
                         }
                         {this.state.returnMoney >= 0 &&
-                            <ConfirmButton onClick={this.purchaseCompleted}>完了</ConfirmButton>
+                            <NextButton onClick={this.purchaseCompleted}>完了</NextButton>
                         }
                         {this.state.returnMoney >= 0 &&
-                            <NotConfirmButton onClick={this.purchaseNotCompleted}>戻る</NotConfirmButton>
+                            <BackButton onClick={this.purchaseNotCompleted}>戻る</BackButton>
                         }
                     </Confirm>
                 </ConfirmWrapper>

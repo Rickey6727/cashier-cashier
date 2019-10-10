@@ -1,28 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase';
+import { DeleteLink } from './utilities/Button';
 
 const Wrapper = styled.div`
 `
 
-const Title = styled.h1`
-    text-align: center;
-    font-family: 'Papyrus';
-    font-size: 1rem;
-`
-
-const DeleteButton = styled.a`
-    padding: 2px 10px;
-    background-color: red;
-    color: white;
-    border-radius: 10px;
-    margin-left: 30px;
+const LocalDeleteLink = styled(DeleteLink)`
+    position: absolute;
+    top: -11px;
+    left: 133px;
+    height: 13px;
+    width: 50px;
+    padding: 3px 0;
+    font-size: 10px;
 `
 
 const DeleteForm = styled.div`
     margin: 0 auto;
     position: fixed;
-    top: 50px;
+    top: 20px;
     left: 50%;
     transform: translate(-50%, -50%);
 `
@@ -122,10 +119,9 @@ export default class OrderHistory extends React.Component{
     render(){
         return (
             <Wrapper>
-                <Title>HISTORY</Title>
                 <DeleteForm>
                     <input type='text' placeholder="レシート番号を入力" onChange={this.handleDeleteReceiptIdChange} value={this.state.deleteReceiptId}/>
-                    <DeleteButton onClick={this.deleteReceipt}>返品</DeleteButton>
+                    <LocalDeleteLink onClick={this.deleteReceipt}>返品</LocalDeleteLink>
                 </DeleteForm>
                 <Table>
                     <thead>

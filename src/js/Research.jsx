@@ -3,13 +3,6 @@ import request from 'superagent';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-    margin-left: 100px;
-`
-
-const Title = styled.h1`
-    text-align: center;
-    font-family: 'Papyrus';
-    font-size: 1rem;
 `
 
 export default class Research extends React.Component{
@@ -28,7 +21,6 @@ export default class Research extends React.Component{
     render(){
         return (
             <Wrapper>
-                <Title>Research</Title>
             </Wrapper>
         )
     }

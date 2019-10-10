@@ -6,19 +6,19 @@ import firebase from 'firebase';
 const Wrapper = styled.div`
 `
 
-const Title = styled.h1`
-    text-align: center;
-    font-family: 'Papyrus';
-    font-size: 1rem;
-`
-
 const ListWrapper = styled.div`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 60%;
     margin: 0 auto;
     padding: 50px;
-    min-height: 80vh;
+    height: 80vh;
     background-color: #F3F3ED;
     border-radius: 10px;
+    box-shadow: 0 0 8px gray;
+    overflow: scroll;
 `
 
 const List = styled.ul`
@@ -89,7 +89,6 @@ export default class Menu extends React.Component{
     render(){
         return (
             <Wrapper>
-                <Title>MENU</Title>
                 <ListWrapper>
                     <List>
                         {this.state.menus.map((menu, index) => (
