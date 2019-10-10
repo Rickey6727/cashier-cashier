@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { addMenu } from './DatabaseConnection';
 import firebase from 'firebase';
 import { NextLink, DeleteButton } from './utilities/Button';
+import { Input, Textarea } from './utilities/Form';
 
 const Wrapper = styled.div`
     margin-left: 50px;
@@ -58,15 +59,7 @@ const AddMenuLabel = styled.label`
     width: 100%;
 `
 
-const AddMenuInput = styled.input`
-    width: 100%;
-    margin: 10px 0;
-`
-
-const AddMenuTextarea = styled.textarea`
-    width: 100%;
-    min-height: 100px;
-    margin: 10px 0;
+const AddMenuTextarea = styled(Textarea)`
 `
 
 export default class MenuEdit extends React.Component{
@@ -155,10 +148,10 @@ export default class MenuEdit extends React.Component{
                 <AddMenuFormWrapper>
                     <AddMenuForm>
                         <AddMenuLabel>
-                            <AddMenuInput type='text' name='MenuName' value={this.state.newMenuName} onChange={this.handleChange} placeholder='メニュー名称'/>
+                            <Input type='text' name='MenuName' value={this.state.newMenuName} onChange={this.handleChange} placeholder='メニュー名称'/>
                         </AddMenuLabel>
                         <AddMenuLabel>
-                            <AddMenuInput type='tel' name='MenuPrice' value={this.state.newMenuPrice} onChange={this.handleChange} placeholder='設定価格'/>
+                            <Input type='number' name='MenuPrice' value={this.state.newMenuPrice} onChange={this.handleChange} placeholder='設定価格'/>
                         </AddMenuLabel>
                         <AddMenuLabel>
                             <AddMenuTextarea type='text' name='MenuMemo' value={this.state.newMenuMemo} onChange={this.handleChange} placeholder='メモ'/>

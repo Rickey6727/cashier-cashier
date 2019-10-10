@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase';
 import { addHistory } from './DatabaseConnection';
-import { NextButton, BackButton, PadButton } from './utilities/Button'
+import { NextButton, BackButton, PadButton } from './utilities/Button';
+import { Input } from './utilities/Form';
 
 const Wrapper = styled.div`
 `
@@ -79,7 +80,7 @@ const ConfirmWrapper = styled.div`
 const Confirm = styled.div`
     position: fixed;
     width: 20vw;
-    height: 325px;
+    height: 413px;
     background-color: #F3F3ED;
     border-radius: 10px;
     padding: 50px;
@@ -234,7 +235,7 @@ export default class Order extends React.Component{
                 <ConfirmWrapper id='confirm_open'>
                     <Confirm>
                         <h2>注文金額：¥ {this.state.purchasePrice} -</h2>
-                        <h2>お預かり：<input type="tel" value={this.state.deposit} onChange={this.handleDepositChange}/></h2>
+                        <h2>お預かり：<Input type="number" value={this.state.deposit} onChange={this.handleDepositChange}/></h2>
                         {this.state.returnMoney > 0 ?
                             <h2>お釣り: ¥ {this.state.returnMoney}</h2>
                             :

@@ -2,14 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import firebase from 'firebase';
 import { DeleteLink } from './utilities/Button';
+import { Input } from './utilities/Form';
 
 const Wrapper = styled.div`
 `
 
 const LocalDeleteLink = styled(DeleteLink)`
     position: absolute;
-    top: -11px;
-    left: 133px;
+    top: 8px;
+    left: 208px;
     height: 13px;
     width: 50px;
     padding: 3px 0;
@@ -120,7 +121,7 @@ export default class OrderHistory extends React.Component{
         return (
             <Wrapper>
                 <DeleteForm>
-                    <input type='text' placeholder="レシート番号を入力" onChange={this.handleDeleteReceiptIdChange} value={this.state.deleteReceiptId}/>
+                    <Input type='text' placeholder="レシート番号を入力" onChange={this.handleDeleteReceiptIdChange} value={this.state.deleteReceiptId}/>
                     <LocalDeleteLink onClick={this.deleteReceipt}>返品</LocalDeleteLink>
                 </DeleteForm>
                 <Table>
