@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import '../styles/circle.css';
 import Circle from './utilities/Circle';
+import firebase from 'firebase';
 
 const Wrapper = styled.div`
 `
@@ -11,9 +12,53 @@ export default class Research extends React.Component{
         super(props)
         this.state = {
             percentage: 50,
-            lists: [{menu_title:'コーヒー',per:0},{menu_title:'コーヒー',per:20},{menu_title:'コーヒーコーヒーコーヒーコーヒーコーヒーコーヒーコーヒー',per:40},{menu_title:'コーヒー',per:60},{menu_title:'コーヒー',per:80},{menu_title:'コーヒー',per:100},{menu_title:'コーヒー',per:20},{menu_title:'コーヒー',per:40},{menu_title:'コーヒー',per:60}],
+            lists: [],
+            totalPrice: 0,
+            totalCount: 0,
         }
         this.plusPercentage = this.plusPercentage.bind(this);
+        this.searchOrderHistory = this.searchOrderHistory.bind(this);
+        this.searchOrderHistory();
+    }
+    async searchOrderHistory() {
+        const db = firebase.firestore();
+        let result = [];
+        let items = [];
+        let counts = {};
+        let c = 0;
+        let p = 0;
+        const docRef = db.collection("history");
+        await docRef
+            .get()
+            .then(function(querySnapshot) {
+                querySnapshot.forEach(function(doc) {
+                    let purchased_item_lists = doc.data().purchased_item_list;
+                    for (let list in purchased_item_lists) {
+                        for(let i=0; i<purchased_item_lists[list].purchased_count; i++){
+                            items.push(purchased_item_lists[list].menu_title);
+                            c = c + 1;
+                            p = p + purchased_item_lists[list].menu_price;
+                        }
+                    }
+                });
+                for(let i=0;i< items.length;i++){
+                  let key = items[i];
+                  counts[key] = (counts[key])? counts[key] + 1 : 1 ;
+                }
+                for (let key in counts) {
+                    result.push({menu_title: key, per: Math.round(counts[key]/c * 100)});
+                }
+            })
+            .catch(function(error) {
+                console.log("Error getting documents: ", error);
+            });
+        if ( result !== null) {
+            this.setState({
+                lists: result,
+                totalPrice: p,
+                totalCount: c,
+            });
+        }
     }
     plusPercentage(t,id) {
         let localList = this.state.lists;
@@ -40,6 +85,8 @@ export default class Research extends React.Component{
                         )
                     })}
                 </List>
+                <div>売上合計：¥ {this.state.totalPrice} -</div>
+                <div>販売個数：{this.state.totalCount}点</div>
             </Wrapper>
         )
     }
@@ -65,7 +112,7 @@ const List = styled.ul`
 
 const ListContent = styled.li`
     width: 240px;
-    margin: 50px;
+    margin: 25px;
 `
 
 const MenuTitle = styled.div`

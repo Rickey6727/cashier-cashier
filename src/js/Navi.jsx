@@ -58,9 +58,9 @@ const ListContent = styled.li`
     margin: 0 50px;
 `
 
-const ListContentDisable = styled(ListContent)`
-    opacity: 0.4;
-`
+// const ListContentDisable = styled(ListContent)`
+//     opacity: 0.4;
+// `
 
 const SampleButtonWrapper = styled.div`
     position: fixed;
@@ -134,8 +134,8 @@ export default class Navi extends React.Component{
                             <ListContent><Link to="/menu" onClick={this.closeNavi}><img src={MenuImage} alt='Menu' /></Link></ListContent>
                             <ListContent><Link to="/order" onClick={this.closeNavi}><img src={PosImage} alt='Pos' /></Link></ListContent>
                             <ListContent><Link to="/order-history" onClick={this.closeNavi}><img src={HistoryImage} alt='History' /></Link></ListContent>
-                            {/* <ListContent><Link to="/research" onClick={this.closeNavi}><img src={ResearchImage} alt='Research' /></Link></ListContent> */}
-                            <ListContentDisable><img src={ResearchImage} alt='Research' /></ListContentDisable>
+                            <ListContent><Link to="/research" onClick={this.closeNavi}><img src={ResearchImage} alt='Research' /></Link></ListContent>
+                            {/* <ListContentDisable><img src={ResearchImage} alt='Research' /></ListContentDisable> */}
                             <ListContent><Link to="/menu-edit" onClick={this.closeNavi}><img src={SettingImage} alt='Setting' /></Link></ListContent>
                         </ListContentWrapper>
                     </List>

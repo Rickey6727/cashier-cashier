@@ -40,6 +40,10 @@ const ListContentName = styled.p`
     border-bottom: dotted 1px #2D2D2C;
 `
 
+const ListContentMemo = styled.p`
+    width: 70%;
+`
+
 const AddMenuFormWrapper = styled.div`
     position: fixed;
     width: 20vw;
@@ -140,7 +144,7 @@ export default class MenuEdit extends React.Component{
                     {this.state.menus.map((menu, index) => (
                     <ListContent key={index}>
                         <ListContentName>{menu.data.menu_title} ( ¥{menu.data.menu_price}- )</ListContentName>
-                        <p>{menu.data.menu_memo}</p>
+                        <ListContentMemo>{menu.data.menu_memo}</ListContentMemo>
                         <LocalDeleteButton onClick={() => this.deleteMenu(menu.key)}>削除</LocalDeleteButton>
                     </ListContent>
                     ))}

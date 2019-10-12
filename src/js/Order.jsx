@@ -58,11 +58,14 @@ const PurchaseItemsListContent = styled.li`
 
 const PurchaseItemName = styled.p`
     float: left;
+    width: 150px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 `
 
 const PurchaseItemPrice = styled.p`
     float: right;
-    margin-right: 50px;
 `
 
 const ConfirmWrapper = styled.div`
