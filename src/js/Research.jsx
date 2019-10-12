@@ -25,6 +25,7 @@ export default class Research extends React.Component{
         let result = [];
         let items = [];
         let counts = {};
+        let price = {};
         let c = 0;
         let p = 0;
         const docRef = db.collection("history");
@@ -35,24 +36,26 @@ export default class Research extends React.Component{
                     let purchased_item_lists = doc.data().purchased_item_list;
                     for (let list in purchased_item_lists) {
                         for(let i=0; i<purchased_item_lists[list].purchased_count; i++){
-                            items.push(purchased_item_lists[list].menu_title);
+                            items.push({menu_title:purchased_item_lists[list].menu_title,menu_price:purchased_item_lists[list].menu_price});
                             c = c + 1;
                             p = p + purchased_item_lists[list].menu_price;
                         }
                     }
                 });
                 for(let i=0;i< items.length;i++){
-                  let key = items[i];
+                  let key = items[i].menu_title;
                   counts[key] = (counts[key])? counts[key] + 1 : 1 ;
+                  price[key] = items[i].menu_price; 
                 }
                 for (let key in counts) {
-                    result.push({menu_title: key, per: Math.round(counts[key]/c * 100)});
+                    result.push({menu_title: key, per: Math.round(counts[key]/c * 100), count: counts[key], price: price[key] * counts[key]});
                 }
             })
             .catch(function(error) {
                 console.log("Error getting documents: ", error);
             });
         if ( result !== null) {
+            console.log(result);
             this.setState({
                 lists: result,
                 totalPrice: p,
@@ -69,15 +72,22 @@ export default class Research extends React.Component{
         }
         this.setState({ lists: localList });
     }
-    calculate
     render(){
         return (
             <Wrapper>
+                {this.state.lists.length > 0 &&
+                    <SummaryWrapper>
+                        <div>総売上： ¥ {this.state.totalPrice} -</div>
+                        <div>総販売個数：{this.state.totalCount}点</div>
+                    </SummaryWrapper>
+                }
                 <List>
                     {this.state.lists.map((list, index) => {
                         return (
                             <ListContent key={index}>
                                 <MenuTitle>{list.menu_title}</MenuTitle>
+                                <MenuTitle>{list.count}個</MenuTitle>
+                                <MenuTitle>¥ {list.price} -</MenuTitle>
                                 <Content>
                                     <Circle percentage={String(list.per)}/>
                                 </Content>
@@ -85,8 +95,6 @@ export default class Research extends React.Component{
                         )
                     })}
                 </List>
-                <div>売上合計：¥ {this.state.totalPrice} -</div>
-                <div>販売個数：{this.state.totalCount}点</div>
             </Wrapper>
         )
     }
@@ -125,4 +133,15 @@ const MenuTitle = styled.div`
 
 const Content = styled.div`
     width: 80%;
+`
+
+const SummaryWrapper = styled.div`
+    width: 80%;
+    margin: 30px auto;
+    color: #444444;
+    border: solid 2px #444444;
+    border-radius: 10px;
+    padding: 30px;
+    font-size: 30px;
+    background-color: #f9faff;
 `
